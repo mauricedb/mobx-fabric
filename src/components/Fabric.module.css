@@ -1,0 +1,4 @@
+.fabric {
+  height: calc(100vh - 54px);
+  width: calc(100vw - 54px);
+}
