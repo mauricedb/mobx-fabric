@@ -2,7 +2,13 @@ import { makeAutoObservable } from 'mobx';
 
 import { isCircle } from '../utils/fabric';
 
-type CanvasObjectState = {
+export type Connection = {
+  id: number;
+  from: CanvasObjectState;
+  to: CanvasObjectState;
+};
+
+export type CanvasObjectState = {
   angle?: number;
   fill?: string | fabric.Pattern | fabric.Gradient;
   height?: number;
@@ -47,6 +53,7 @@ const createCanvasState = () => {
   return makeAutoObservable({
     canvasObjects: [] as CanvasObjectState[],
     selected: [] as CanvasObjectState[],
+    connections: [] as Connection[],
     isDrawingMode: false,
 
     addCanvasObject(canvasObject: Partial<CanvasObjectState>) {
@@ -66,6 +73,16 @@ const createCanvasState = () => {
         .concat(this.canvasObjects.filter((o) => selectedIds.includes(o.id)))
         .filter((o) => !deselectedIds.includes(o.id));
       this.selected = selected;
+    },
+
+    connectSelected() {
+      if (this.selected.length === 2) {
+        this.connections.push({
+          id: Date.now(),
+          from: this.selected[0],
+          to: this.selected[1],
+        });
+      }
     },
   });
 };

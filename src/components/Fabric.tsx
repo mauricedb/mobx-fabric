@@ -3,9 +3,12 @@ import { fabric } from 'fabric';
 import { autorun, toJS } from 'mobx';
 
 import classes from './Fabric.module.css';
-import { canvasState } from '../state/canvasState';
+import {
+  CanvasObjectState,
+  canvasState,
+  Connection,
+} from '../state/canvasState';
 import { IsObjectWithId } from '../utils/id';
-import { isObject } from 'mobx/dist/internal';
 
 interface SelectionEvent extends fabric.IEvent {
   selected?: fabric.Object[];
@@ -41,8 +44,28 @@ const connectToState = (target: fabric.Object) => {
   });
 };
 
-let isMouseDown = false;
-let connectorLine: fabric.Line | null = null;
+const centerOfObject = (from: CanvasObjectState): fabric.Point => {
+  return new fabric.Point(
+    (from.left ?? 0) + (from.width ?? 0) / 2,
+    (from.top ?? 0) + (from.height ?? 0) / 2
+  );
+};
+
+const connectConnectorToState = (target: fabric.Line, state: Connection) => {
+  autorun(() => {
+    console.log('Updating fabric.Line', toJS(state));
+    const { from, to } = state;
+    const fromPos = centerOfObject(from);
+    const toPos = centerOfObject(to);
+    target.set({
+      x1: fromPos.x,
+      y1: fromPos.y,
+      x2: toPos.x,
+      y2: toPos.y,
+    });
+    target.canvas?.requestRenderAll();
+  });
+};
 
 const getObjectIds = (objects: fabric.Object[] = []) => {
   const objectIds = objects
@@ -69,53 +92,6 @@ export const Fabric: React.FC = () => {
         backgroundColor: 'lightcyan',
         height: clientRect.height,
         width: clientRect.width,
-      });
-
-      // canvas.on('mouse:dblclick', (e) => {
-      //   console.log(e);
-
-      //   const l = new fabric.Line([0, 0, 200, 200], {
-      //     stroke: 'red',
-      //     // selectable: false,
-      //     // evented: false,
-      //   });
-      //   l.left = e.pointer?.x;
-      //   l.top = e.pointer?.y;
-
-      //   canvas.add(l);
-      // });
-
-      canvas.on('mouse:down', (object) => {
-        isMouseDown = true;
-
-        var pointer = canvas.getPointer(object.e);
-        var points = [pointer.x, pointer.y, pointer.x, pointer.y];
-
-        var options = {
-          // selectable: false,
-          fill: 'black',
-          stroke: 'black',
-          strokeWidth: 2,
-          originX: 'center',
-          originY: 'center',
-        };
-
-        connectorLine = new fabric.Line(points, options);
-        canvas.add(connectorLine);
-      });
-
-      canvas.on('mouse:move', (object) => {
-        if (isMouseDown && connectorLine) {
-          var pointer = canvas.getPointer(object.e);
-          connectorLine.set({ x2: pointer.x, y2: pointer.y });
-          canvas.requestRenderAll();
-
-          // connectorLine.oCoords.
-        }
-      });
-
-      canvas.on('mouse:up', () => {
-        isMouseDown = false;
       });
 
       canvas.on('object:modified', ({ target }) => {
@@ -145,27 +121,27 @@ export const Fabric: React.FC = () => {
       });
 
       autorun(() => {
+        console.log('Checking canvasState.isDrawingMode');
+
         canvas.isDrawingMode = canvasState.isDrawingMode;
       });
 
       autorun(() => {
-        const canvasIds = canvas.getObjects().map((o) => {
-          if (IsObjectWithId(o)) {
-            return o.id;
-          }
-          return undefined;
-        });
+        console.log('Checking canvasState.canvasObjects');
 
-        const newCanvasObjects = canvasState.canvasObjects.filter(
-          (c) => !canvasIds.includes(c.id)
+        const currentObjectIds = getObjectIds(canvas.getObjects());
+        const newObjects = canvasState.canvasObjects.filter(
+          (o) => !currentObjectIds.includes(o.id)
         );
 
-        newCanvasObjects.forEach((element) => {
-          if (element.klass) {
-            const klass = fabric.util.getKlass(element.klass, '');
+        newObjects.forEach((state) => {
+          console.log('New Object:', state.id, state.klass);
+
+          if (state.klass) {
+            const klass = fabric.util.getKlass(state.klass, '');
             klass.fromObject(
               {
-                id: element.id,
+                id: state.id,
               },
               (newObject: any) => {
                 connectToState(newObject);
@@ -173,6 +149,34 @@ export const Fabric: React.FC = () => {
               }
             );
           }
+        });
+      });
+
+      autorun(() => {
+        console.log('Checking canvasState.connections');
+
+        const currentObjectIds = getObjectIds(canvas.getObjects());
+        const newObjects = canvasState.connections.filter(
+          (o) => !currentObjectIds.includes(o.id)
+        );
+
+        newObjects.forEach((state) => {
+          console.log('New Connector:', state.id);
+
+          var options = {
+            id: state.id,
+            selectable: false,
+            fill: 'black',
+            stroke: 'black',
+            strokeWidth: 2,
+            originX: 'center',
+            originY: 'center',
+          };
+
+          const connectorLine = new fabric.Line(undefined, options);
+          canvas.add(connectorLine);
+
+          connectConnectorToState(connectorLine, state);
         });
       });
     }

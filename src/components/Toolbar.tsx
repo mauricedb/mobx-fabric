@@ -31,7 +31,14 @@ export const Toolbar = observer(() => {
       >
         Circle
       </button>
-      <button disabled={canvasState.selected.length !== 2}>Connect</button>
+      <button
+        onClick={() => {
+          canvasState.connectSelected();
+        }}
+        disabled={canvasState.selected.length !== 2}
+      >
+        Connect
+      </button>
     </div>
   );
 });
