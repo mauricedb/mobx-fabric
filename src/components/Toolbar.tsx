@@ -9,7 +9,7 @@ import classes from './Toolbar.module.css';
 export const Toolbar = observer(() => {
   const canvasState = useContext(CanvasContext);
 
-  console.log('Rendering Toolbar', toJS(canvasState));
+  console.log('Rendering Toolbar', toJS(canvasState.selected));
 
   return (
     <div className={classes.toolbar}>
@@ -22,12 +22,16 @@ export const Toolbar = observer(() => {
       </button>
       <button
         onClick={() => {
-          canvasState.addCanvasObject({ klass: 'circle', fill: 'green' });
+          canvasState.addCanvasObject({
+            klass: 'circle',
+            fill: 'green',
+            left: 500,
+          });
         }}
       >
         Circle
       </button>
-      <button disabled={canvasState.canvasObjects.length !== 2}>Connect</button>
+      <button disabled={canvasState.selected.length !== 2}>Connect</button>
     </div>
   );
 });

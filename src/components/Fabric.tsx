@@ -5,6 +5,7 @@ import { autorun, toJS } from 'mobx';
 import classes from './Fabric.module.css';
 import { canvasState } from '../state/canvasState';
 import { IsObjectWithId } from '../utils/id';
+import { isObject } from 'mobx/dist/internal';
 
 interface SelectionEvent extends fabric.IEvent {
   selected?: fabric.Object[];
@@ -43,7 +44,22 @@ const connectToState = (target: fabric.Object) => {
 let isMouseDown = false;
 let connectorLine: fabric.Line | null = null;
 
+const getObjectIds = (objects: fabric.Object[] = []) => {
+  const objectIds = objects
+    .map((o) => {
+      if (IsObjectWithId(o)) {
+        return o.id;
+      }
+      return null;
+    })
+    .filter((o) => o) as number[];
+
+  return objectIds;
+};
+
 export const Fabric: React.FC = () => {
+  console.log('Rendering Fabric');
+
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -112,16 +128,20 @@ export const Fabric: React.FC = () => {
         }
       });
 
-      canvas.on('selection:cleared', (e: SelectionEvent) =>
-        console.log('selection:cleared', e.deselected)
-      );
+      canvas.on('selection:cleared', (e: SelectionEvent) => {
+        const deselectedIds = getObjectIds(e.deselected);
+        canvasState.updateSelection([], deselectedIds);
+      });
 
-      canvas.on('selection:updated', (e: SelectionEvent) =>
-        console.log('selection:updated', e.selected, e.deselected)
-      );
+      canvas.on('selection:updated', (e: SelectionEvent) => {
+        const selectedIds = getObjectIds(e.selected);
+        const deselectedIds = getObjectIds(e.deselected);
+        canvasState.updateSelection(selectedIds, deselectedIds);
+      });
 
       canvas.on('selection:created', (e: SelectionEvent) => {
-        console.log('selection:created', e.selected);
+        const selectedIds = getObjectIds(e.selected);
+        canvasState.updateSelection(selectedIds, []);
       });
 
       autorun(() => {

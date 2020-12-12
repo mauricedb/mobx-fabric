@@ -46,6 +46,7 @@ const createCanvasObjectState = (obj: {}) => {
 const createCanvasState = () => {
   return makeAutoObservable({
     canvasObjects: [] as CanvasObjectState[],
+    selected: [] as CanvasObjectState[],
     isDrawingMode: false,
 
     addCanvasObject(canvasObject: Partial<CanvasObjectState>) {
@@ -58,6 +59,13 @@ const createCanvasState = () => {
 
     setDrawingMode(mode: boolean) {
       this.isDrawingMode = mode;
+    },
+
+    updateSelection(selectedIds: number[], deselectedIds: number[]) {
+      const selected = this.selected
+        .concat(this.canvasObjects.filter((o) => selectedIds.includes(o.id)))
+        .filter((o) => !deselectedIds.includes(o.id));
+      this.selected = selected;
     },
   });
 };
