@@ -1,8 +1,16 @@
-import React from 'react';
-import { canvasState } from '../state/canvasState';
+import React, { useContext } from 'react';
+import { observer } from 'mobx-react-lite';
+import { toJS } from 'mobx';
+
+import { CanvasContext } from '../state/canvasContext';
+
 import classes from './Toolbar.module.css';
 
-export const Toolbar = () => {
+export const Toolbar = observer(() => {
+  const canvasState = useContext(CanvasContext);
+
+  console.log('Rendering Toolbar', toJS(canvasState));
+
   return (
     <div className={classes.toolbar}>
       <button
@@ -19,6 +27,7 @@ export const Toolbar = () => {
       >
         Circle
       </button>
+      <button disabled={canvasState.canvasObjects.length !== 2}>Connect</button>
     </div>
   );
-};
+});

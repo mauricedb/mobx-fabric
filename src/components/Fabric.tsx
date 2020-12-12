@@ -1,10 +1,15 @@
 import React, { useEffect } from 'react';
 import { fabric } from 'fabric';
-import { autorun } from 'mobx';
+import { autorun, toJS } from 'mobx';
 
 import classes from './Fabric.module.css';
 import { canvasState } from '../state/canvasState';
 import { IsObjectWithId } from '../utils/id';
+
+interface SelectionEvent extends fabric.IEvent {
+  selected?: fabric.Object[];
+  deselected?: fabric.Object[];
+}
 
 const connectToState = (target: fabric.Object) => {
   autorun(() => {
@@ -14,7 +19,7 @@ const connectToState = (target: fabric.Object) => {
       );
 
       if (canvasObject) {
-        console.log('canvasObject updating', canvasObject.id);
+        console.log('Updating fabric.Object', toJS(canvasObject));
 
         target.animate(
           {
@@ -35,6 +40,9 @@ const connectToState = (target: fabric.Object) => {
   });
 };
 
+let isMouseDown = false;
+let connectorLine: fabric.Line | null = null;
+
 export const Fabric: React.FC = () => {
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
 
@@ -47,6 +55,53 @@ export const Fabric: React.FC = () => {
         width: clientRect.width,
       });
 
+      // canvas.on('mouse:dblclick', (e) => {
+      //   console.log(e);
+
+      //   const l = new fabric.Line([0, 0, 200, 200], {
+      //     stroke: 'red',
+      //     // selectable: false,
+      //     // evented: false,
+      //   });
+      //   l.left = e.pointer?.x;
+      //   l.top = e.pointer?.y;
+
+      //   canvas.add(l);
+      // });
+
+      canvas.on('mouse:down', (object) => {
+        isMouseDown = true;
+
+        var pointer = canvas.getPointer(object.e);
+        var points = [pointer.x, pointer.y, pointer.x, pointer.y];
+
+        var options = {
+          // selectable: false,
+          fill: 'black',
+          stroke: 'black',
+          strokeWidth: 2,
+          originX: 'center',
+          originY: 'center',
+        };
+
+        connectorLine = new fabric.Line(points, options);
+        canvas.add(connectorLine);
+      });
+
+      canvas.on('mouse:move', (object) => {
+        if (isMouseDown && connectorLine) {
+          var pointer = canvas.getPointer(object.e);
+          connectorLine.set({ x2: pointer.x, y2: pointer.y });
+          canvas.requestRenderAll();
+
+          // connectorLine.oCoords.
+        }
+      });
+
+      canvas.on('mouse:up', () => {
+        isMouseDown = false;
+      });
+
       canvas.on('object:modified', ({ target }) => {
         if (IsObjectWithId(target)) {
           const objectState = canvasState.canvasObjects.find(
@@ -55,6 +110,18 @@ export const Fabric: React.FC = () => {
 
           objectState?.copyStateFromFabricObject(target);
         }
+      });
+
+      canvas.on('selection:cleared', (e: SelectionEvent) =>
+        console.log('selection:cleared', e.deselected)
+      );
+
+      canvas.on('selection:updated', (e: SelectionEvent) =>
+        console.log('selection:updated', e.selected, e.deselected)
+      );
+
+      canvas.on('selection:created', (e: SelectionEvent) => {
+        console.log('selection:created', e.selected);
       });
 
       autorun(() => {

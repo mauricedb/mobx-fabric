@@ -63,3 +63,4 @@ const createCanvasState = () => {
 };
 
 export const canvasState = createCanvasState();
+export type CanvasState = typeof canvasState;
