@@ -35,6 +35,16 @@ const initializeCanvasToState = (canvas: fabric.Canvas) => {
     }
   });
 
+  canvas.on('object:moving', ({ target }: fabric.IEvent) => {
+    if (IsObjectWithId(target)) {
+      const objectState = canvasState.canvasObjects.find(
+        (o) => o.id === target.id
+      );
+
+      objectState?.copyStateFromMovingFabricObject(target);
+    }
+  });
+
   canvas.on('selection:cleared', (e: SelectionEvent) => {
     const deselectedIds = getObjectIds(e.deselected);
     canvasState.updateSelection([], deselectedIds);

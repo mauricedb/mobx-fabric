@@ -18,7 +18,10 @@ export type CanvasObjectState = {
   radius?: number;
   top?: number;
   width?: number;
+  movingTop?: number;
+  movingLeft?: number;
   copyStateFromFabricObject: (object: fabric.Object) => void;
+  copyStateFromMovingFabricObject: (object: fabric.Object) => void;
 };
 
 const createCanvasObjectState = (obj: {}) => {
@@ -29,6 +32,8 @@ const createCanvasObjectState = (obj: {}) => {
     id: Date.now(),
     klass: 'rect',
     left: 100,
+    movingLeft: undefined,
+    movingTop: undefined,
     radius: 100,
     top: 100,
     width: 200,
@@ -39,12 +44,18 @@ const createCanvasObjectState = (obj: {}) => {
       this.fill = object.fill;
       this.height = object.height;
       this.left = object.left;
+      this.movingLeft = undefined;
+      this.movingTop = undefined;
       this.top = object.top;
       this.width = object.width;
 
       if (isCircle(object)) {
         this.radius = object.radius;
       }
+    },
+    copyStateFromMovingFabricObject(object: fabric.Object) {
+      this.movingLeft = object.left;
+      this.movingTop = object.top;
     },
   });
 };

@@ -3,10 +3,10 @@ import { autorun } from 'mobx';
 
 import { CanvasObjectState, Connection } from '../state/canvasState';
 
-const centerOfObject = (from: CanvasObjectState): fabric.Point => {
+const centerOfObject = (object: CanvasObjectState): fabric.Point => {
   return new fabric.Point(
-    (from.left ?? 0) + (from.width ?? 0) / 2,
-    (from.top ?? 0) + (from.height ?? 0) / 2
+    (object.movingLeft ?? object.left ?? 0) + (object.width ?? 0) / 2,
+    (object.movingTop ?? object.top ?? 0) + (object.height ?? 0) / 2
   );
 };
 
@@ -22,7 +22,6 @@ const connectToState = (target: fabric.Line, state: Connection) => {
       x2: toPos.x,
       y2: toPos.y,
     });
-    target.canvas?.requestRenderAll();
   });
 };
 
