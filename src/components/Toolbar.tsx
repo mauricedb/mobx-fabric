@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { observer } from 'mobx-react-lite';
-import { toJS } from 'mobx';
 
 import { CanvasContext } from '../state/canvasContext';
 
@@ -9,7 +8,7 @@ import classes from './Toolbar.module.css';
 export const Toolbar = observer(() => {
   const canvasState = useContext(CanvasContext);
 
-  console.log('Rendering Toolbar', toJS(canvasState.selected));
+  console.log('Rendering Toolbar');
 
   return (
     <div className={classes.toolbar}>

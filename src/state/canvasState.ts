@@ -57,7 +57,7 @@ const createCanvasState = () => {
     isDrawingMode: false,
 
     addCanvasObject(canvasObject: Partial<CanvasObjectState>) {
-      console.log('addCanvasObject', canvasObject);
+      console.log('addCanvasObject', canvasObject.id);
 
       const temp = createCanvasObjectState(canvasObject);
 
