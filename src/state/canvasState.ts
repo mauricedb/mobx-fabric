@@ -13,7 +13,7 @@ export type CanvasObjectState = {
   fill?: string | fabric.Pattern | fabric.Gradient;
   height?: number;
   id: number;
-  klass: string;
+  type: string;
   left?: number;
   radius?: number;
   scaleX?: number;
@@ -32,7 +32,7 @@ const createCanvasObjectState = (obj: {}) => {
     fill: '#0000FF',
     height: 200,
     id: Date.now(),
-    klass: 'rect',
+    type: 'rect',
     left: 100,
     movingLeft: undefined,
     movingTop: undefined,

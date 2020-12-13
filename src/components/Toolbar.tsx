@@ -1,10 +1,9 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import { CanvasContext } from '../state/canvasContext';
 
 import classes from './Toolbar.module.css';
-import { LabeledInput } from './LabeledInput';
 import { ObjectStateEditor } from './ObjectStateEditor';
 
 export const Toolbar = observer(() => {
@@ -17,7 +16,7 @@ export const Toolbar = observer(() => {
     <div className={classes.toolbar}>
       <button
         onClick={() => {
-          canvasState.addCanvasObject({ klass: 'rect' });
+          canvasState.addCanvasObject({ type: 'rect' });
         }}
       >
         Rectangle
@@ -25,7 +24,7 @@ export const Toolbar = observer(() => {
       <button
         onClick={() => {
           canvasState.addCanvasObject({
-            klass: 'circle',
+            type: 'circle',
             fill: '#00FF00',
             left: 500,
           });

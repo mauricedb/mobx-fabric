@@ -1,9 +1,3 @@
-import React, { useContext } from 'react';
-import { observer } from 'mobx-react-lite';
-
-import { CanvasContext } from '../state/canvasContext';
-
-import classes from './Toolbar.module.css';
 import { LabeledInput } from './LabeledInput';
 import { CanvasObjectState } from '../state/canvasState';
 

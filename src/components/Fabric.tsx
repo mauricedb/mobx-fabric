@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { fabric } from 'fabric';
 
 import classes from './Fabric.module.css';
@@ -7,7 +7,7 @@ import { initialize } from '../fabric/canvas';
 export const Fabric: React.FC = () => {
   console.log('Rendering Fabric');
 
-  const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     if (canvasRef.current) {

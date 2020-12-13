@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { Fabric } from './components/Fabric';
 import { Toolbar } from './components/Toolbar';
 

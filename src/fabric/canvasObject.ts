@@ -5,7 +5,7 @@ import { CanvasObjectState } from '../state/canvasState';
 
 const connectToState = (target: fabric.Object, state: CanvasObjectState) => {
   autorun(() => {
-    console.log('Updating fabric.Object', state.id);
+    console.log('Updating fabric.Object', state.id, state.type);
 
     target.animate(
       {
@@ -30,10 +30,10 @@ export const createCanvasObject = (
   state: CanvasObjectState,
   canvas: fabric.Canvas
 ) => {
-  console.log('New Object:', state.id, state.klass);
+  console.log('New Object:', state.id, state.type);
 
-  if (state.klass) {
-    const klass = fabric.util.getKlass(state.klass, '');
+  if (state.type) {
+    const klass = fabric.util.getKlass(state.type, '');
     klass.fromObject(
       {
         id: state.id,
