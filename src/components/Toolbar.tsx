@@ -4,10 +4,13 @@ import { observer } from 'mobx-react-lite';
 import { CanvasContext } from '../state/canvasContext';
 
 import classes from './Toolbar.module.css';
+import { LabeledInput } from './LabeledInput';
+import { ObjectStateEditor } from './ObjectStateEditor';
 
 export const Toolbar = observer(() => {
   const canvasState = useContext(CanvasContext);
-
+  const selected =
+    canvasState.selected.length === 1 ? canvasState.selected[0] : null;
   console.log('Rendering Toolbar');
 
   return (
@@ -23,7 +26,7 @@ export const Toolbar = observer(() => {
         onClick={() => {
           canvasState.addCanvasObject({
             klass: 'circle',
-            fill: 'green',
+            fill: '#00FF00',
             left: 500,
           });
         }}
@@ -38,6 +41,7 @@ export const Toolbar = observer(() => {
       >
         Connect
       </button>
+      <ObjectStateEditor object={selected} />
     </div>
   );
 });

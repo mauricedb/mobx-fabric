@@ -14,6 +14,8 @@ const connectToState = (target: fabric.Object, state: CanvasObjectState) => {
         height: state.height ?? 0,
         left: state.left ?? 0,
         radius: state.radius ?? 0,
+        scaleX: state.scaleX ?? 1,
+        scaleY: state.scaleY ?? 1,
         top: state.top ?? 0,
         width: state.width ?? 0,
       },

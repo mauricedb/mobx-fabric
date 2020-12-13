@@ -16,6 +16,8 @@ export type CanvasObjectState = {
   klass: string;
   left?: number;
   radius?: number;
+  scaleX?: number;
+  scaleY?: number;
   top?: number;
   width?: number;
   movingTop?: number;
@@ -27,7 +29,7 @@ export type CanvasObjectState = {
 const createCanvasObjectState = (obj: {}) => {
   return makeAutoObservable<CanvasObjectState>({
     angle: 0,
-    fill: 'blue',
+    fill: '#0000FF',
     height: 200,
     id: Date.now(),
     klass: 'rect',
@@ -37,15 +39,20 @@ const createCanvasObjectState = (obj: {}) => {
     radius: 100,
     top: 100,
     width: 200,
+    scaleX: 1,
+    scaleY: 1,
     ...obj,
 
     copyStateFromFabricObject(object: fabric.Object) {
+      console.log('Updating state from object', this.id);
+
       this.angle = object.angle;
-      this.fill = object.fill;
       this.height = object.height;
       this.left = object.left;
       this.movingLeft = undefined;
       this.movingTop = undefined;
+      this.scaleX = object.scaleX;
+      this.scaleY = object.scaleY;
       this.top = object.top;
       this.width = object.width;
 

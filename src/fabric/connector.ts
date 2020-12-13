@@ -4,6 +4,7 @@ import { autorun } from 'mobx';
 import { CanvasObjectState, Connection } from '../state/canvasState';
 
 const centerOfObject = (object: CanvasObjectState): fabric.Point => {
+  // TODO: Use getCenterPoint()
   return new fabric.Point(
     (object.movingLeft ?? object.left ?? 0) + (object.width ?? 0) / 2,
     (object.movingTop ?? object.top ?? 0) + (object.height ?? 0) / 2
