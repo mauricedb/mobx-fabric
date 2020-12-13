@@ -1,10 +1,11 @@
 import { fabric } from 'fabric';
-import { autorun } from 'mobx';
+import { autorun, runInAction } from 'mobx';
 
 import { canvasState } from '../state/canvasState';
 import { IsObjectWithId } from '../utils/id';
 import { createConnector } from '../fabric/connector';
 import { createCanvasObject } from '../fabric/canvasObject';
+import { isCircle } from '../utils/fabric';
 
 interface SelectionEvent extends fabric.IEvent {
   selected?: fabric.Object[];
@@ -27,21 +28,40 @@ const getObjectIds = (objects: fabric.Object[] = []) => {
 const initializeCanvasToState = (canvas: fabric.Canvas) => {
   canvas.on('object:modified', ({ target }) => {
     if (IsObjectWithId(target)) {
-      const objectState = canvasState.canvasObjects.find(
-        (o) => o.id === target.id
-      );
+      const state = canvasState.canvasObjects.find((o) => o.id === target.id);
 
-      objectState?.copyStateFromFabricObject(target);
+      if (state) {
+        runInAction(() => {
+          console.log('Updating state from object', state.id);
+
+          state.angle = target.angle;
+          state.height = target.height;
+          state.left = target.left;
+          state.movingLeft = undefined;
+          state.movingTop = undefined;
+          state.scaleX = target.scaleX;
+          state.scaleY = target.scaleY;
+          state.top = target.top;
+          state.width = target.width;
+
+          if (isCircle(target)) {
+            state.radius = target.radius;
+          }
+        });
+      }
     }
   });
 
   canvas.on('object:moving', ({ target }: fabric.IEvent) => {
     if (IsObjectWithId(target)) {
-      const objectState = canvasState.canvasObjects.find(
-        (o) => o.id === target.id
-      );
+      const state = canvasState.canvasObjects.find((o) => o.id === target.id);
 
-      objectState?.copyStateFromMovingFabricObject(target);
+      if (state) {
+        runInAction(() => {
+          state.movingLeft = target.left;
+          state.movingTop = target.top;
+        });
+      }
     }
   });
 
