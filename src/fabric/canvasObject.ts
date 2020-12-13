@@ -33,7 +33,7 @@ export const createCanvasObject = (
   console.log('New Object:', state.id, state.type);
 
   if (state.type) {
-    const klass = fabric.util.getKlass(state.type, '');
+    const klass = fabric.util.getKlass(state.type, 'fabric');
     klass.fromObject(
       {
         id: state.id,
