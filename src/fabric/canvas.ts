@@ -6,7 +6,6 @@ import { IsObjectWithId } from '../utils/id';
 import { createConnector } from '../fabric/connector';
 import { createCanvasObject } from '../fabric/canvasObject';
 import { isCircle } from '../utils/fabric';
-import { exception } from 'console';
 
 interface SelectionEvent extends fabric.IEvent {
   selected?: fabric.Object[];
