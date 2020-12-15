@@ -1,11 +1,12 @@
 import { fabric } from 'fabric';
 import { autorun, runInAction } from 'mobx';
 
-import { canvasState } from '../state/canvasState';
+import { CanvasObjectState, canvasState } from '../state/canvasState';
 import { IsObjectWithId } from '../utils/id';
 import { createConnector } from '../fabric/connector';
 import { createCanvasObject } from '../fabric/canvasObject';
 import { isCircle } from '../utils/fabric';
+import { exception } from 'console';
 
 interface SelectionEvent extends fabric.IEvent {
   selected?: fabric.Object[];
@@ -23,6 +24,49 @@ const getObjectIds = (objects: fabric.Object[] = []) => {
     .filter((o) => o) as number[];
 
   return objectIds;
+};
+
+const addIfDefined = (
+  anchors: fabric.Point[],
+  point?: fabric.Point
+): fabric.Point[] => {
+  if (point) {
+    return [...anchors, point];
+  } else {
+    return anchors;
+  }
+};
+
+export const updateAnchors = (
+  state: CanvasObjectState,
+  target: fabric.Object
+) => {
+  const { oCoords } = target;
+
+  let anchors: fabric.Point[] = [];
+  switch (target.type) {
+    case 'rect':
+      anchors = addIfDefined(anchors, oCoords?.mt);
+      anchors = addIfDefined(anchors, oCoords?.ml);
+      anchors = addIfDefined(anchors, oCoords?.mr);
+      anchors = addIfDefined(anchors, oCoords?.mb);
+
+      anchors = addIfDefined(anchors, oCoords?.tl);
+      anchors = addIfDefined(anchors, oCoords?.tr);
+      anchors = addIfDefined(anchors, oCoords?.bl);
+      anchors = addIfDefined(anchors, oCoords?.br);
+      break;
+    case 'circle':
+      anchors = addIfDefined(anchors, oCoords?.mt);
+      anchors = addIfDefined(anchors, oCoords?.ml);
+      anchors = addIfDefined(anchors, oCoords?.mr);
+      anchors = addIfDefined(anchors, oCoords?.mb);
+      break;
+    default:
+      throw new Error(`Should not get here for type: ${target.type}`);
+  }
+
+  state.anchors = anchors;
 };
 
 const initializeCanvasToState = (canvas: fabric.Canvas) => {
@@ -44,6 +88,8 @@ const initializeCanvasToState = (canvas: fabric.Canvas) => {
           state.top = target.top;
           state.width = target.width;
 
+          updateAnchors(state, target);
+
           if (isCircle(target)) {
             state.radius = target.radius;
           }
@@ -60,6 +106,8 @@ const initializeCanvasToState = (canvas: fabric.Canvas) => {
         runInAction(() => {
           state.movingLeft = target.left;
           state.movingTop = target.top;
+
+          updateAnchors(state, target);
         });
       }
     }

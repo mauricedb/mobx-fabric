@@ -1,7 +1,8 @@
 import { fabric } from 'fabric';
-import { autorun } from 'mobx';
+import { autorun, runInAction } from 'mobx';
 
 import { CanvasObjectState } from '../state/canvasState';
+import { updateAnchors } from './canvas';
 
 const connectToState = (target: fabric.Object, state: CanvasObjectState) => {
   autorun(() => {
@@ -20,7 +21,12 @@ const connectToState = (target: fabric.Object, state: CanvasObjectState) => {
         width: state.width ?? 0,
       },
       {
-        onChange: () => target.canvas?.requestRenderAll(),
+        onChange: () => {
+          target.canvas?.requestRenderAll();
+        },
+        onComplete: () => {
+          runInAction(() => updateAnchors(state, target));
+        },
       }
     );
   });

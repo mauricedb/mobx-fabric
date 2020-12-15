@@ -20,6 +20,7 @@ export type CanvasObjectState = {
   width?: number;
   movingTop?: number;
   movingLeft?: number;
+  anchors: fabric.Point[];
 };
 
 const createCanvasObjectState = (obj: {}) => {
@@ -37,6 +38,7 @@ const createCanvasObjectState = (obj: {}) => {
     width: 200,
     scaleX: 1,
     scaleY: 1,
+    anchors: [],
     ...obj,
   });
 };
