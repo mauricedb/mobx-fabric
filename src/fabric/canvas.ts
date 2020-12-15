@@ -26,15 +26,16 @@ const getObjectIds = (objects: fabric.Object[] = []) => {
   return objectIds;
 };
 
-const addIfDefined = (
-  anchors: fabric.Point[],
-  point?: fabric.Point
+const addPointIfDefined = (
+  ...points: (fabric.Point | undefined)[]
 ): fabric.Point[] => {
-  if (point) {
-    return [...anchors, point];
-  } else {
-    return anchors;
-  }
+  return points.reduce((anchors, point) => {
+    if (point) {
+      return [...anchors, point];
+    } else {
+      return anchors;
+    }
+  }, [] as fabric.Point[]);
 };
 
 export const updateAnchors = (
@@ -43,35 +44,33 @@ export const updateAnchors = (
 ) => {
   const { oCoords } = target;
 
-  let anchors: fabric.Point[] = [];
   switch (target.type) {
     case 'rect':
-      anchors = addIfDefined(anchors, oCoords?.mt);
-      anchors = addIfDefined(anchors, oCoords?.ml);
-      anchors = addIfDefined(anchors, oCoords?.mr);
-      anchors = addIfDefined(anchors, oCoords?.mb);
-
-      anchors = addIfDefined(anchors, oCoords?.tl);
-      anchors = addIfDefined(anchors, oCoords?.tr);
-      anchors = addIfDefined(anchors, oCoords?.bl);
-      anchors = addIfDefined(anchors, oCoords?.br);
+      state.anchors = addPointIfDefined(
+        oCoords?.mt,
+        oCoords?.ml,
+        oCoords?.mr,
+        oCoords?.mb,
+        oCoords?.tl,
+        oCoords?.tr,
+        oCoords?.bl,
+        oCoords?.br
+      );
       break;
     case 'circle':
-      anchors = addIfDefined(anchors, oCoords?.mt);
-      anchors = addIfDefined(anchors, oCoords?.ml);
-      anchors = addIfDefined(anchors, oCoords?.mr);
-      anchors = addIfDefined(anchors, oCoords?.mb);
+      state.anchors = addPointIfDefined(
+        oCoords?.mt,
+        oCoords?.ml,
+        oCoords?.mr,
+        oCoords?.mb
+      );
       break;
     case 'triangle':
-      anchors = addIfDefined(anchors, oCoords?.mt);
-      anchors = addIfDefined(anchors, oCoords?.bl);
-      anchors = addIfDefined(anchors, oCoords?.br);
+      state.anchors = addPointIfDefined(oCoords?.mt, oCoords?.bl, oCoords?.br);
       break;
     default:
       throw new Error(`Should not get here for type: ${target.type}`);
   }
-
-  state.anchors = anchors;
 };
 
 const initializeCanvasToState = (canvas: fabric.Canvas) => {
