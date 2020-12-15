@@ -34,6 +34,17 @@ export const Toolbar = observer(() => {
       </button>
       <button
         onClick={() => {
+          canvasState.addCanvasObject({
+            type: 'triangle',
+            fill: '#FF0000',
+            top: 400,
+          });
+        }}
+      >
+        Triangle
+      </button>
+      <button
+        onClick={() => {
           canvasState.connectSelected();
         }}
         disabled={canvasState.selected.length !== 2}

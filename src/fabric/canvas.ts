@@ -62,6 +62,11 @@ export const updateAnchors = (
       anchors = addIfDefined(anchors, oCoords?.mr);
       anchors = addIfDefined(anchors, oCoords?.mb);
       break;
+    case 'triangle':
+      anchors = addIfDefined(anchors, oCoords?.mt);
+      anchors = addIfDefined(anchors, oCoords?.bl);
+      anchors = addIfDefined(anchors, oCoords?.br);
+      break;
     default:
       throw new Error(`Should not get here for type: ${target.type}`);
   }
