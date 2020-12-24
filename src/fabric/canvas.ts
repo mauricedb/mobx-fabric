@@ -26,11 +26,15 @@ const getObjectIds = (objects: fabric.Object[] = []) => {
 };
 
 const addPointIfDefined = (
+  matrix: any[] | undefined,
   ...points: (fabric.Point | undefined)[]
 ): fabric.Point[] => {
   return points.reduce((anchors, point) => {
     if (point) {
-      return [...anchors, point];
+      return [
+        ...anchors,
+        matrix ? fabric.util.transformPoint(point, matrix) : point,
+      ];
     } else {
       return anchors;
     }
@@ -39,13 +43,15 @@ const addPointIfDefined = (
 
 export const updateAnchors = (
   state: CanvasObjectState,
-  target: fabric.Object
+  target: fabric.Object,
+  matrix?: any[]
 ) => {
-  const { oCoords } = target;
+  const oCoords = target.calcCoords();
 
   switch (target.type) {
     case 'rect':
       state.anchors = addPointIfDefined(
+        matrix,
         oCoords?.mt,
         oCoords?.ml,
         oCoords?.mr,
@@ -58,6 +64,7 @@ export const updateAnchors = (
       break;
     case 'circle':
       state.anchors = addPointIfDefined(
+        matrix,
         oCoords?.mt,
         oCoords?.ml,
         oCoords?.mr,
@@ -65,7 +72,12 @@ export const updateAnchors = (
       );
       break;
     case 'triangle':
-      state.anchors = addPointIfDefined(oCoords?.mt, oCoords?.bl, oCoords?.br);
+      state.anchors = addPointIfDefined(
+        matrix,
+        oCoords?.mt,
+        oCoords?.bl,
+        oCoords?.br
+      );
       break;
     default:
       throw new Error(`Should not get here for type: ${target.type}`);
@@ -101,18 +113,40 @@ const initializeCanvasToState = (canvas: fabric.Canvas) => {
     }
   });
 
+  const getTargets = (target?: fabric.Object): fabric.Object[] => {
+    if (!target) {
+      return [];
+    } else if (target instanceof fabric.ActiveSelection) {
+      return target.getObjects();
+    } else {
+      return [target];
+    }
+  };
+
   canvas.on('object:moving', ({ target }: fabric.IEvent) => {
-    if (IsObjectWithId(target)) {
-      const state = canvasState.canvasObjects.find((o) => o.id === target.id);
+    console.log('moving', target?.type);
 
-      if (state) {
-        runInAction(() => {
-          state.movingLeft = target.left;
-          state.movingTop = target.top;
+    if (target) {
+      const targets = getTargets(target);
+      var mGroup =
+        target instanceof fabric.ActiveSelection
+          ? target.calcTransformMatrix(true)
+          : undefined;
 
-          updateAnchors(state, target);
-        });
-      }
+      targets.forEach((t) => {
+        if (IsObjectWithId(t)) {
+          const state = canvasState.canvasObjects.find((o) => o.id === t.id);
+
+          if (state) {
+            runInAction(() => {
+              state.movingLeft = t.left;
+              state.movingTop = t.top;
+
+              updateAnchors(state, t, mGroup);
+            });
+          }
+        }
+      });
     }
   });
 
