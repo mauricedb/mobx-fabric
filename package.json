@@ -45,6 +45,16 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
+    "husky": "^4.3.6",
+    "lint-staged": "^10.5.3",
     "prettier": "^2.2.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx,json,js,css,md}": "prettier --write"
   }
 }
