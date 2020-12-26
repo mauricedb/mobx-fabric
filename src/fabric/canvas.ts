@@ -26,27 +26,26 @@ const getObjectIds = (objects: fabric.Object[] = []) => {
 };
 
 const addPointIfDefined = (
-  matrix: any[] | undefined,
+  matrix: number[],
   ...points: (fabric.Point | undefined)[]
 ): fabric.Point[] => {
-  return points.reduce((anchors, point) => {
-    if (point) {
-      return [
-        ...anchors,
-        matrix ? fabric.util.transformPoint(point, matrix) : point,
-      ];
-    } else {
-      return anchors;
-    }
-  }, [] as fabric.Point[]);
+  return points
+    .reduce((anchors, point) => {
+      if (point) {
+        return [...anchors, point];
+      } else {
+        return anchors;
+      }
+    }, [] as fabric.Point[])
+    .map((point) => fabric.util.transformPoint(point, matrix));
 };
 
 export const updateAnchors = (
   state: CanvasObjectState,
   target: fabric.Object,
-  matrix?: any[]
+  matrix: number[] = getMatrix(target)
 ) => {
-  const oCoords = target.calcCoords();
+  const oCoords = target.calcCoords() as fabric.Object['oCoords'];
 
   switch (target.type) {
     case 'rect':
@@ -94,15 +93,22 @@ const getTargets = (target?: fabric.Object): fabric.Object[] => {
   }
 };
 
+const getMatrix = (target?: fabric.Object): number[] => {
+  const noOpMatrix = [1, 0, 0, 1, 0, 0];
+
+  if (target instanceof fabric.ActiveSelection) {
+    return target.calcTransformMatrix(true);
+  } else {
+    return noOpMatrix;
+  }
+};
+
 const onObjectsMoving = (eventName: string, { target }: fabric.IEvent) => {
   console.log(eventName, target?.type);
 
   if (target) {
     const targets = getTargets(target);
-    var mGroup =
-      target instanceof fabric.ActiveSelection
-        ? target.calcTransformMatrix(true)
-        : undefined;
+    const matrix = getMatrix(target);
 
     runInAction(() => {
       targets.forEach((t) => {
@@ -110,7 +116,7 @@ const onObjectsMoving = (eventName: string, { target }: fabric.IEvent) => {
           const state = canvasState.canvasObjects.find((o) => o.id === t.id);
 
           if (state) {
-            updateAnchors(state, t, mGroup);
+            updateAnchors(state, t, matrix);
           }
         }
       });
