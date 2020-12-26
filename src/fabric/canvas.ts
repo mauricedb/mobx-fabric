@@ -84,6 +84,40 @@ export const updateAnchors = (
   }
 };
 
+const getTargets = (target?: fabric.Object): fabric.Object[] => {
+  if (!target) {
+    return [];
+  } else if (target instanceof fabric.ActiveSelection) {
+    return target.getObjects();
+  } else {
+    return [target];
+  }
+};
+
+const onObjectsMoving = (eventName: string, { target }: fabric.IEvent) => {
+  console.log(eventName, target?.type);
+
+  if (target) {
+    const targets = getTargets(target);
+    var mGroup =
+      target instanceof fabric.ActiveSelection
+        ? target.calcTransformMatrix(true)
+        : undefined;
+
+    runInAction(() => {
+      targets.forEach((t) => {
+        if (IsObjectWithId(t)) {
+          const state = canvasState.canvasObjects.find((o) => o.id === t.id);
+
+          if (state) {
+            updateAnchors(state, t, mGroup);
+          }
+        }
+      });
+    });
+  }
+};
+
 const initializeCanvasToState = (canvas: fabric.Canvas) => {
   canvas.on('object:modified', ({ target }) => {
     if (IsObjectWithId(target)) {
@@ -111,39 +145,9 @@ const initializeCanvasToState = (canvas: fabric.Canvas) => {
     }
   });
 
-  const getTargets = (target?: fabric.Object): fabric.Object[] => {
-    if (!target) {
-      return [];
-    } else if (target instanceof fabric.ActiveSelection) {
-      return target.getObjects();
-    } else {
-      return [target];
-    }
-  };
-
-  canvas.on('object:moving', ({ target }: fabric.IEvent) => {
-    console.log('moving', target?.type);
-
-    if (target) {
-      const targets = getTargets(target);
-      var mGroup =
-        target instanceof fabric.ActiveSelection
-          ? target.calcTransformMatrix(true)
-          : undefined;
-
-      targets.forEach((t) => {
-        if (IsObjectWithId(t)) {
-          const state = canvasState.canvasObjects.find((o) => o.id === t.id);
-
-          if (state) {
-            runInAction(() => {
-              updateAnchors(state, t, mGroup);
-            });
-          }
-        }
-      });
-    }
-  });
+  canvas.on('object:rotating', (e) => onObjectsMoving('object:rotating', e));
+  canvas.on('object:scaling', (e) => onObjectsMoving('object:scaling', e));
+  canvas.on('object:moving', (e) => onObjectsMoving('object:moving', e));
 
   canvas.on('selection:cleared', (e: SelectionEvent) => {
     const deselectedIds = getObjectIds(e.deselected);

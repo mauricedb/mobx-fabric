@@ -80,12 +80,12 @@ const createCanvasState = () => {
 export const canvasState = createCanvasState();
 export type CanvasState = typeof canvasState;
 
-// const from = createCanvasObjectState({ id: 1 });
-// const to = createCanvasObjectState({ id: 2, left: 400, fill: '#FF0000' });
+const from = createCanvasObjectState({ id: 1 });
+const to = createCanvasObjectState({ id: 2, left: 400, fill: '#FF0000' });
 
-// canvasState.canvasObjects.push(from);
-// canvasState.canvasObjects.push(to);
+canvasState.canvasObjects.push(from);
+canvasState.canvasObjects.push(to);
 
-// canvasState.selected.push(from);
-// canvasState.selected.push(to);
-// canvasState.connectSelected();
+canvasState.selected.push(from);
+canvasState.selected.push(to);
+canvasState.connectSelected();
