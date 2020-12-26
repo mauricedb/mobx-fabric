@@ -96,8 +96,6 @@ const initializeCanvasToState = (canvas: fabric.Canvas) => {
           state.angle = target.angle;
           state.height = target.height;
           state.left = target.left;
-          state.movingLeft = undefined;
-          state.movingTop = undefined;
           state.scaleX = target.scaleX;
           state.scaleY = target.scaleY;
           state.top = target.top;
@@ -139,9 +137,6 @@ const initializeCanvasToState = (canvas: fabric.Canvas) => {
 
           if (state) {
             runInAction(() => {
-              state.movingLeft = t.left;
-              state.movingTop = t.top;
-
               updateAnchors(state, t, mGroup);
             });
           }

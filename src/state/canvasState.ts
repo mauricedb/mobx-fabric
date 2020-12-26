@@ -18,8 +18,6 @@ export type CanvasObjectState = {
   scaleY?: number;
   top?: number;
   width?: number;
-  movingTop?: number;
-  movingLeft?: number;
   anchors: fabric.Point[];
 };
 
@@ -31,8 +29,6 @@ const createCanvasObjectState = (obj: {}) => {
     id: Date.now(),
     type: 'rect',
     left: 100,
-    movingLeft: undefined,
-    movingTop: undefined,
     radius: 100,
     top: 100,
     width: 200,
