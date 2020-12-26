@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable } from "mobx";
 
 export type Connection = {
   id: number;
@@ -24,10 +24,10 @@ export type CanvasObjectState = {
 const createCanvasObjectState = (obj: {}) => {
   return makeAutoObservable<CanvasObjectState>({
     angle: 0,
-    fill: '#0000FF',
+    fill: "#0000FF",
     height: 200,
     id: Date.now(),
-    type: 'rect',
+    type: "rect",
     left: 100,
     radius: 100,
     top: 100,
@@ -47,7 +47,7 @@ const createCanvasState = () => {
     isDrawingMode: false,
 
     addCanvasObject(canvasObject: Partial<CanvasObjectState>) {
-      console.log('addCanvasObject', canvasObject.id);
+      console.log("addCanvasObject", canvasObject.id);
 
       const temp = createCanvasObjectState(canvasObject);
 
@@ -80,10 +80,10 @@ const createCanvasState = () => {
 export const canvasState = createCanvasState();
 export type CanvasState = typeof canvasState;
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   // Few shapes to ease development
   const from = createCanvasObjectState({ id: 1 });
-  const to = createCanvasObjectState({ id: 2, left: 400, fill: '#FF0000' });
+  const to = createCanvasObjectState({ id: 2, left: 400, fill: "#FF0000" });
 
   canvasState.canvasObjects.push(from);
   canvasState.canvasObjects.push(to);

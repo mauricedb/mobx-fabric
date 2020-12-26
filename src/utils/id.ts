@@ -3,4 +3,4 @@ export type ObjectWithId = {
 };
 
 export const IsObjectWithId = (value: any): value is ObjectWithId =>
-  typeof value?.id === 'number';
+  typeof value?.id === "number";

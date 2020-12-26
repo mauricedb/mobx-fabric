@@ -1,22 +1,22 @@
-import { useContext } from 'react';
-import { observer } from 'mobx-react-lite';
+import { useContext } from "react";
+import { observer } from "mobx-react-lite";
 
-import { CanvasContext } from '../state/canvasContext';
+import { CanvasContext } from "../state/canvasContext";
 
-import classes from './Toolbar.module.css';
-import { ObjectStateEditor } from './ObjectStateEditor';
+import classes from "./Toolbar.module.css";
+import { ObjectStateEditor } from "./ObjectStateEditor";
 
 export const Toolbar = observer(() => {
   const canvasState = useContext(CanvasContext);
   const selected =
     canvasState.selected.length === 1 ? canvasState.selected[0] : null;
-  console.log('Rendering Toolbar');
+  console.log("Rendering Toolbar");
 
   return (
     <div className={classes.toolbar}>
       <button
         onClick={() => {
-          canvasState.addCanvasObject({ type: 'rect' });
+          canvasState.addCanvasObject({ type: "rect" });
         }}
       >
         Rectangle
@@ -24,8 +24,8 @@ export const Toolbar = observer(() => {
       <button
         onClick={() => {
           canvasState.addCanvasObject({
-            type: 'circle',
-            fill: '#00FF00',
+            type: "circle",
+            fill: "#00FF00",
             left: 500,
           });
         }}
@@ -35,8 +35,8 @@ export const Toolbar = observer(() => {
       <button
         onClick={() => {
           canvasState.addCanvasObject({
-            type: 'triangle',
-            fill: '#FF0000',
+            type: "triangle",
+            fill: "#FF0000",
             top: 400,
           });
         }}

@@ -1,11 +1,11 @@
-import { fabric } from 'fabric';
-import { autorun, runInAction } from 'mobx';
+import { fabric } from "fabric";
+import { autorun, runInAction } from "mobx";
 
-import { CanvasObjectState, canvasState } from '../state/canvasState';
-import { IsObjectWithId } from '../utils/id';
-import { createConnector } from '../fabric/connector';
-import { createCanvasObject } from '../fabric/canvasObject';
-import { isCircle } from '../utils/fabric';
+import { CanvasObjectState, canvasState } from "../state/canvasState";
+import { IsObjectWithId } from "../utils/id";
+import { createConnector } from "../fabric/connector";
+import { createCanvasObject } from "../fabric/canvasObject";
+import { isCircle } from "../utils/fabric";
 
 interface SelectionEvent extends fabric.IEvent {
   selected?: fabric.Object[];
@@ -45,10 +45,10 @@ export const updateAnchors = (
   target: fabric.Object,
   matrix: number[] = getMatrix(target)
 ) => {
-  const oCoords = target.calcCoords() as fabric.Object['oCoords'];
+  const oCoords = target.calcCoords() as fabric.Object["oCoords"];
 
   switch (target.type) {
-    case 'rect':
+    case "rect":
       state.anchors = addPointIfDefined(
         matrix,
         oCoords?.mt,
@@ -61,7 +61,7 @@ export const updateAnchors = (
         oCoords?.br
       );
       break;
-    case 'circle':
+    case "circle":
       state.anchors = addPointIfDefined(
         matrix,
         oCoords?.mt,
@@ -70,7 +70,7 @@ export const updateAnchors = (
         oCoords?.mb
       );
       break;
-    case 'triangle':
+    case "triangle":
       state.anchors = addPointIfDefined(
         matrix,
         oCoords?.mt,
@@ -125,13 +125,13 @@ const onObjectsMoving = (eventName: string, { target }: fabric.IEvent) => {
 };
 
 const initializeCanvasToState = (canvas: fabric.Canvas) => {
-  canvas.on('object:modified', ({ target }) => {
+  canvas.on("object:modified", ({ target }) => {
     if (IsObjectWithId(target)) {
       const state = canvasState.canvasObjects.find((o) => o.id === target.id);
 
       if (state) {
         runInAction(() => {
-          console.log('Updating state from object', state.id);
+          console.log("Updating state from object", state.id);
 
           state.angle = target.angle;
           state.height = target.height;
@@ -151,22 +151,22 @@ const initializeCanvasToState = (canvas: fabric.Canvas) => {
     }
   });
 
-  canvas.on('object:rotating', (e) => onObjectsMoving('object:rotating', e));
-  canvas.on('object:scaling', (e) => onObjectsMoving('object:scaling', e));
-  canvas.on('object:moving', (e) => onObjectsMoving('object:moving', e));
+  canvas.on("object:rotating", (e) => onObjectsMoving("object:rotating", e));
+  canvas.on("object:scaling", (e) => onObjectsMoving("object:scaling", e));
+  canvas.on("object:moving", (e) => onObjectsMoving("object:moving", e));
 
-  canvas.on('selection:cleared', (e: SelectionEvent) => {
+  canvas.on("selection:cleared", (e: SelectionEvent) => {
     const deselectedIds = getObjectIds(e.deselected);
     canvasState.updateSelection([], deselectedIds);
   });
 
-  canvas.on('selection:updated', (e: SelectionEvent) => {
+  canvas.on("selection:updated", (e: SelectionEvent) => {
     const selectedIds = getObjectIds(e.selected);
     const deselectedIds = getObjectIds(e.deselected);
     canvasState.updateSelection(selectedIds, deselectedIds);
   });
 
-  canvas.on('selection:created', (e: SelectionEvent) => {
+  canvas.on("selection:created", (e: SelectionEvent) => {
     const selectedIds = getObjectIds(e.selected);
     canvasState.updateSelection(selectedIds, []);
   });
@@ -174,13 +174,13 @@ const initializeCanvasToState = (canvas: fabric.Canvas) => {
 
 const initializeStateToCanvas = (canvas: fabric.Canvas) => {
   autorun(() => {
-    console.log('Checking canvasState.isDrawingMode');
+    console.log("Checking canvasState.isDrawingMode");
 
     canvas.isDrawingMode = canvasState.isDrawingMode;
   });
 
   autorun(() => {
-    console.log('Checking canvasState.canvasObjects');
+    console.log("Checking canvasState.canvasObjects");
 
     const currentObjectIds = getObjectIds(canvas.getObjects());
     const newObjects = canvasState.canvasObjects.filter(
@@ -193,7 +193,7 @@ const initializeStateToCanvas = (canvas: fabric.Canvas) => {
   });
 
   autorun(() => {
-    console.log('Checking canvasState.connections');
+    console.log("Checking canvasState.connections");
 
     const currentObjectIds = getObjectIds(canvas.getObjects());
     const newObjects = canvasState.connections.filter(

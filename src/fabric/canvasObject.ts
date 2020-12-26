@@ -1,17 +1,17 @@
-import { fabric } from 'fabric';
-import { autorun, runInAction } from 'mobx';
+import { fabric } from "fabric";
+import { autorun, runInAction } from "mobx";
 
-import { CanvasObjectState } from '../state/canvasState';
-import { updateAnchors } from './canvas';
+import { CanvasObjectState } from "../state/canvasState";
+import { updateAnchors } from "./canvas";
 
 const connectToState = (target: fabric.Object, state: CanvasObjectState) => {
   autorun(() => {
-    console.log('Updating fabric.Object', state.id, state.type);
+    console.log("Updating fabric.Object", state.id, state.type);
 
     target.animate(
       {
         angle: state.angle ?? 0,
-        fill: (state.fill as string) ?? 'black',
+        fill: (state.fill as string) ?? "black",
         height: state.height ?? 0,
         left: state.left ?? 0,
         radius: state.radius ?? 0,
@@ -36,10 +36,10 @@ export const createCanvasObject = (
   state: CanvasObjectState,
   canvas: fabric.Canvas
 ) => {
-  console.log('New Object:', state.id, state.type);
+  console.log("New Object:", state.id, state.type);
 
   if (state.type) {
-    const klass = fabric.util.getKlass(state.type, 'fabric');
+    const klass = fabric.util.getKlass(state.type, "fabric");
     klass.fromObject(
       {
         id: state.id,

@@ -1,5 +1,5 @@
-import { LabeledInput } from './LabeledInput';
-import { CanvasObjectState } from '../state/canvasState';
+import { LabeledInput } from "./LabeledInput";
+import { CanvasObjectState } from "../state/canvasState";
 
 type Props = {
   object: CanvasObjectState | null;

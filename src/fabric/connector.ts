@@ -1,11 +1,11 @@
-import { fabric } from 'fabric';
-import { autorun } from 'mobx';
+import { fabric } from "fabric";
+import { autorun } from "mobx";
 
-import { Connection } from '../state/canvasState';
+import { Connection } from "../state/canvasState";
 
 const connectToState = (target: fabric.Line, state: Connection) => {
   autorun(() => {
-    console.log('Updating fabric.Line', state.id);
+    console.log("Updating fabric.Line", state.id);
     const { from, to } = state;
 
     const best = from.anchors.reduce(
@@ -43,16 +43,16 @@ const connectToState = (target: fabric.Line, state: Connection) => {
 };
 
 export const createConnector = (state: Connection) => {
-  console.log('New Connector:', state.id);
+  console.log("New Connector:", state.id);
 
   var options = {
     id: state.id,
     selectable: false,
-    fill: 'black',
-    stroke: 'black',
+    fill: "black",
+    stroke: "black",
     strokeWidth: 2,
-    originX: 'center',
-    originY: 'center',
+    originX: "center",
+    originY: "center",
   };
 
   const connectorLine = new fabric.Line(undefined, options);

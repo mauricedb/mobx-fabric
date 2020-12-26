@@ -1,7 +1,7 @@
-import { Fabric } from './components/Fabric';
-import { Toolbar } from './components/Toolbar';
+import { Fabric } from "./components/Fabric";
+import { Toolbar } from "./components/Toolbar";
 
-import { CanvasContext, canvasState } from './state/canvasContext';
+import { CanvasContext, canvasState } from "./state/canvasContext";
 
 function App() {
   return (

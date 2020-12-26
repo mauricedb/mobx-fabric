@@ -1,11 +1,11 @@
-import { useEffect, useRef } from 'react';
-import { fabric } from 'fabric';
+import { useEffect, useRef } from "react";
+import { fabric } from "fabric";
 
-import classes from './Fabric.module.css';
-import { initialize } from '../fabric/canvas';
+import classes from "./Fabric.module.css";
+import { initialize } from "../fabric/canvas";
 
 export const Fabric: React.FC = () => {
-  console.log('Rendering Fabric');
+  console.log("Rendering Fabric");
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -13,7 +13,7 @@ export const Fabric: React.FC = () => {
     if (canvasRef.current) {
       const clientRect = canvasRef.current.getClientRects()[0];
       const canvas = new fabric.Canvas(canvasRef.current, {
-        backgroundColor: 'lightcyan',
+        backgroundColor: "lightcyan",
         height: clientRect.height,
         width: clientRect.width,
       });
