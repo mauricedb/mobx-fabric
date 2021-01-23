@@ -2,9 +2,12 @@ import { fabric } from "fabric";
 import { autorun, runInAction } from "mobx";
 
 import { CanvasObjectState } from "../state/canvasState";
+import { ObjectWithId } from "../utils/id";
 import { updateAnchors } from "./canvas";
 
 const connectToState = (target: fabric.Object, state: CanvasObjectState) => {
+  ((target as unknown) as ObjectWithId).id = state.id;
+
   autorun(() => {
     console.log("Updating fabric.Object", state.id, state.type);
 
@@ -38,16 +41,33 @@ export const createCanvasObject = (
 ) => {
   console.log("New Object:", state.id, state.type);
 
-  if (state.type) {
+  if (state.type === "image") {
+    if (state.file) {
+      const reader = new FileReader();
+      reader.addEventListener(
+        "load",
+        () => {
+          if (typeof reader.result === "string") {
+            fabric.util.loadImage(reader.result, (imgElement) => {
+              var imgInstance = new fabric.Image(imgElement, {
+                height: 200,
+                width: 200,
+              });
+              connectToState(imgInstance, state);
+              canvas.add(imgInstance);
+            });
+          }
+        },
+        false
+      );
+
+      reader.readAsDataURL(state.file);
+    }
+  } else if (state.type) {
     const klass = fabric.util.getKlass(state.type, "fabric");
-    klass.fromObject(
-      {
-        id: state.id,
-      },
-      (newObject: fabric.Object) => {
-        connectToState(newObject, state);
-        canvas.add(newObject);
-      }
-    );
+    klass.fromObject({}, (newObject: fabric.Object) => {
+      connectToState(newObject, state);
+      canvas.add(newObject);
+    });
   }
 };

@@ -78,6 +78,19 @@ export const updateAnchors = (
         oCoords?.br
       );
       break;
+    case "image":
+      state.anchors = addPointIfDefined(
+        matrix,
+        oCoords?.mt,
+        oCoords?.ml,
+        oCoords?.mr,
+        oCoords?.mb,
+        oCoords?.tl,
+        oCoords?.tr,
+        oCoords?.bl,
+        oCoords?.br
+      );
+      break;
     default:
       throw new Error(`Should not get here for type: ${target.type}`);
   }
@@ -94,12 +107,10 @@ const getTargets = (target?: fabric.Object): fabric.Object[] => {
 };
 
 const getMatrix = (target?: fabric.Object): number[] => {
-  const noOpMatrix = [1, 0, 0, 1, 0, 0];
-
   if (target instanceof fabric.ActiveSelection) {
     return target.calcTransformMatrix(true);
   } else {
-    return noOpMatrix;
+    return fabric.iMatrix.concat();
   }
 };
 

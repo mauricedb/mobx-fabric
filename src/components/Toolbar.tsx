@@ -43,6 +43,21 @@ export const Toolbar = observer(() => {
       >
         Triangle
       </button>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const file = e.currentTarget.files?.[0];
+          console.log("onChange", file);
+
+          if (file) {
+            canvasState.addCanvasObject({
+              type: "image",
+              file,
+            });
+          }
+        }}
+      />
       <button
         onClick={() => {
           canvasState.connectSelected();

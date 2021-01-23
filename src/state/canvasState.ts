@@ -19,6 +19,7 @@ export type CanvasObjectState = {
   top?: number;
   width?: number;
   anchors: fabric.Point[];
+  file?: File;
 };
 
 const createCanvasObjectState = (obj: {}) => {
