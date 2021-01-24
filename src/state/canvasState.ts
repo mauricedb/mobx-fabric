@@ -92,4 +92,5 @@ if (process.env.NODE_ENV === "development") {
   canvasState.selected.push(from);
   canvasState.selected.push(to);
   canvasState.connectSelected();
+  canvasState.selected = [];
 }

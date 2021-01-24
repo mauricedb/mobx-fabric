@@ -11,24 +11,33 @@ const connectToState = (target: fabric.Object, state: CanvasObjectState) => {
   autorun(() => {
     console.log("Updating fabric.Object", state.id, state.type);
 
+    target.set({
+      angle: state.angle ?? 0,
+      fill: (state.fill as string) ?? "black",
+      height: state.height ?? 0,
+      left: state.left ?? 0,
+      scaleX: state.scaleX ?? 1,
+      scaleY: state.scaleY ?? 1,
+      top: state.top ?? 0,
+      width: state.width ?? 0,
+      opacity: 0,
+    });
+
+    if (target instanceof fabric.Circle) {
+      target.set({
+        radius: state.radius ?? 0,
+      });
+    }
+
+    updateAnchors(state, target);
+
     target.animate(
       {
-        angle: state.angle ?? 0,
-        fill: (state.fill as string) ?? "black",
-        height: state.height ?? 0,
-        left: state.left ?? 0,
-        radius: state.radius ?? 0,
-        scaleX: state.scaleX ?? 1,
-        scaleY: state.scaleY ?? 1,
-        top: state.top ?? 0,
-        width: state.width ?? 0,
+        opacity: 1,
       },
       {
         onChange: () => {
           target.canvas?.requestRenderAll();
-        },
-        onComplete: () => {
-          runInAction(() => updateAnchors(state, target));
         },
       }
     );
