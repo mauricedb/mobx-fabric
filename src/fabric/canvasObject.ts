@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import { autorun, runInAction } from "mobx";
+import { autorun } from "mobx";
 
 import { CanvasObjectState } from "../state/canvasState";
 import { ObjectWithId } from "../utils/id";
