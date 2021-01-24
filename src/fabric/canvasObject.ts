@@ -48,12 +48,16 @@ export const createCanvasObject = (
         "load",
         () => {
           if (typeof reader.result === "string") {
-            fabric.util.loadImage(reader.result, (imgElement) => {
-              var imgInstance = new fabric.Image(imgElement, {
-                height: 200,
-                width: 200,
-              });
+            fabric.util.loadImage(reader.result, (img) => {
+              var imgInstance = new fabric.Image(img, {});
+
+              state.scaleY = (state.height ?? 200) / img.height;
+              state.scaleX = (state.width ?? 200) / img.width;
+              state.height = img.height;
+              state.width = img.width;
+
               connectToState(imgInstance, state);
+
               canvas.add(imgInstance);
             });
           }
