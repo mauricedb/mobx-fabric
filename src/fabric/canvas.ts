@@ -91,6 +91,19 @@ export const updateAnchors = (
         oCoords?.br
       );
       break;
+    case "path":
+      state.anchors = addPointIfDefined(
+        matrix,
+        oCoords?.mt,
+        oCoords?.ml,
+        oCoords?.mr,
+        oCoords?.mb,
+        oCoords?.tl,
+        oCoords?.tr,
+        oCoords?.bl,
+        oCoords?.br
+      );
+      break;
     default:
       throw new Error(`Should not get here for type: ${target.type}`);
   }

@@ -44,6 +44,51 @@ const connectToState = (target: fabric.Object, state: CanvasObjectState) => {
   });
 };
 
+const connectToStateAndAddImageToCanvas = (
+  image: fabric.Object,
+  state: CanvasObjectState,
+  canvas: fabric.Canvas,
+  size: { height: number; width: number }
+) => {
+  state.scaleY = (state.height ?? 200) / size.height;
+  state.scaleX = (state.width ?? 200) / size.width;
+  state.height = size.height;
+  state.width = size.width;
+
+  connectToState(image, state);
+
+  canvas.add(image);
+};
+
+const loadImageFromFile = (state: CanvasObjectState, canvas: fabric.Canvas) => {
+  if (state.file) {
+    const reader = new FileReader();
+    reader.addEventListener(
+      "load",
+      () => {
+        if (typeof reader.result === "string") {
+          if (state.file?.type === "image/svg+xml") {
+            fabric.loadSVGFromURL(reader.result, function (objects, options) {
+              const image = fabric.util.groupSVGElements(objects, options);
+
+              connectToStateAndAddImageToCanvas(image, state, canvas, options);
+            });
+          } else {
+            fabric.util.loadImage(reader.result, (img) => {
+              const image = new fabric.Image(img, {});
+
+              connectToStateAndAddImageToCanvas(image, state, canvas, img);
+            });
+          }
+        }
+      },
+      false
+    );
+
+    reader.readAsDataURL(state.file);
+  }
+};
+
 export const createCanvasObject = (
   state: CanvasObjectState,
   canvas: fabric.Canvas
@@ -51,31 +96,7 @@ export const createCanvasObject = (
   console.log("New Object:", state.id, state.type);
 
   if (state.type === "image") {
-    if (state.file) {
-      const reader = new FileReader();
-      reader.addEventListener(
-        "load",
-        () => {
-          if (typeof reader.result === "string") {
-            fabric.util.loadImage(reader.result, (img) => {
-              var imgInstance = new fabric.Image(img, {});
-
-              state.scaleY = (state.height ?? 200) / img.height;
-              state.scaleX = (state.width ?? 200) / img.width;
-              state.height = img.height;
-              state.width = img.width;
-
-              connectToState(imgInstance, state);
-
-              canvas.add(imgInstance);
-            });
-          }
-        },
-        false
-      );
-
-      reader.readAsDataURL(state.file);
-    }
+    loadImageFromFile(state, canvas);
   } else if (state.type) {
     const klass = fabric.util.getKlass(state.type, "fabric");
     klass.fromObject({}, (newObject: fabric.Object) => {
