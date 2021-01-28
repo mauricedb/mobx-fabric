@@ -6,6 +6,7 @@ import { IsObjectWithId } from "../utils/id";
 import { createConnector } from "../fabric/connector";
 import { createCanvasObject } from "../fabric/canvasObject";
 import { isCircle } from "../utils/fabric";
+import { getAnchorPointsMap } from "./anchorPoints";
 
 interface SelectionEvent extends fabric.IEvent {
   selected?: fabric.Object[];
@@ -25,21 +26,6 @@ const getObjectIds = (objects: fabric.Object[] = []) => {
   return objectIds;
 };
 
-const addPointIfDefined = (
-  matrix: number[],
-  ...points: (fabric.Point | undefined)[]
-): fabric.Point[] => {
-  return points
-    .reduce((anchors, point) => {
-      if (point) {
-        return [...anchors, point];
-      } else {
-        return anchors;
-      }
-    }, [] as fabric.Point[])
-    .map((point) => fabric.util.transformPoint(point, matrix));
-};
-
 export const updateAnchors = (
   state: CanvasObjectState,
   target: fabric.Object,
@@ -47,66 +33,15 @@ export const updateAnchors = (
 ) => {
   const oCoords = target.calcCoords() as fabric.Object["oCoords"];
 
-  switch (target.type) {
-    case "rect":
-      state.anchors = addPointIfDefined(
-        matrix,
-        oCoords?.mt,
-        oCoords?.ml,
-        oCoords?.mr,
-        oCoords?.mb,
-        oCoords?.tl,
-        oCoords?.tr,
-        oCoords?.bl,
-        oCoords?.br
-      );
-      break;
-    case "circle":
-      state.anchors = addPointIfDefined(
-        matrix,
-        oCoords?.mt,
-        oCoords?.ml,
-        oCoords?.mr,
-        oCoords?.mb
-      );
-      break;
-    case "triangle":
-      state.anchors = addPointIfDefined(
-        matrix,
-        oCoords?.mt,
-        oCoords?.bl,
-        oCoords?.br
-      );
-      break;
-    case "image":
-      state.anchors = addPointIfDefined(
-        matrix,
-        oCoords?.mt,
-        oCoords?.ml,
-        oCoords?.mr,
-        oCoords?.mb,
-        oCoords?.tl,
-        oCoords?.tr,
-        oCoords?.bl,
-        oCoords?.br
-      );
-      break;
-    case "path":
-      state.anchors = addPointIfDefined(
-        matrix,
-        oCoords?.mt,
-        oCoords?.ml,
-        oCoords?.mr,
-        oCoords?.mb,
-        oCoords?.tl,
-        oCoords?.tr,
-        oCoords?.bl,
-        oCoords?.br
-      );
-      break;
-    default:
-      throw new Error(`Should not get here for type: ${target.type}`);
+  if (target.type) {
+    const getAnchors = getAnchorPointsMap.get(target.type);
+    if (getAnchors) {
+      state.anchors = getAnchors(matrix, oCoords);
+      return;
+    }
   }
+
+  throw new Error(`Should not get here for type: ${target.type}`);
 };
 
 const getTargets = (target?: fabric.Object): fabric.Object[] => {
